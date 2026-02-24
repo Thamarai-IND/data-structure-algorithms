@@ -1,3 +1,4 @@
+
 // Node class
 class Node {
   constructor(value) {
@@ -148,6 +149,58 @@ class SinglyLinkedList {
     return slow.value; // Middle node value
   }
 
+  // Reverse the linked list
+  reverse() {
+    let prev = null;
+    let current = this.head;
+    let next = null;
+
+    while (current) {
+      next = current.next;
+      current.next = prev;
+      prev = current;
+      current = next;
+    }
+
+    this.head = prev;
+  }
+
+  // Detect cycle using Floyd’s Cycle Detection Algorithm
+  detectCycle() {
+    let slow = this.head;
+    let fast = this.head;
+
+    while (fast && fast.next) {
+      slow = slow.next;
+      fast = fast.next.next;
+
+      if (slow === fast) {
+        return true; // cycle detected
+      }
+    }
+    return false; // no cycle
+  }
+
+  // Remove duplicate nodes (unsorted list)
+  removeDuplicates() {
+    if (!this.head) return;
+
+    const seen = new Set();
+    let current = this.head;
+    let previous = null;
+
+    while (current) {
+      if (seen.has(current.value)) {
+        previous.next = current.next; // skip duplicate
+        this.size--;
+      } else {
+        seen.add(current.value);
+        previous = current;
+      }
+      current = current.next;
+    }
+  }
+
   // Print the list
   print() {
     let current = this.head;
@@ -177,26 +230,42 @@ class SinglyLinkedList {
   }
 }
 
-// Example usage:
+// Demo: calling all methods
 const list = new SinglyLinkedList();
-list.append(1);
-list.append(2);
-list.append(3);
-list.append(4);
-list.append(5);
 
-list.print(); // 1 -> 2 -> 3 -> 4 -> 5 -> null
+console.log("Is empty?", list.isEmpty()); // true
+list.append(10);
+list.append(20);
+list.append(30);
+list.prepend(5);
+list.insertAt(15, 2);
+list.print(); // 5 -> 10 -> 15 -> 20 -> 30 -> null
+
 console.log("Size:", list.getSize()); // 5
-console.log("Middle Node:", list.findMiddle()); // 3
-console.log("Search 4:", list.search(4)); // 3
-list.removeValue(2);
-list.print(); // 1 -> 3 -> 4 -> 5 -> null
-list.removeAt(1);
-list.print(); // 1 -> 4 -> 5 -> null
-list.insertAt(2, 1);
-list.print(); // 1 -> 2 -> 4 -> 5 -> null
+console.log("Search 20:", list.search(20)); // 3
+console.log("Get at index 2:", list.getAt(2)); // 15
+console.log("Middle Node:", list.findMiddle()); // 15 or 20 depending on length
+
+list.removeValue(10);
+list.print(); // 5 -> 15 -> 20 -> 30 -> null
+
+list.removeAt(2);
+list.print(); // 5 -> 15 -> 30 -> null
+
+list.append(15);
+list.append(30);
+list.print(); // 5 -> 15 -> 30 -> 15 -> 30 -> null
+list.removeDuplicates();
+list.print(); // 5 -> 15 -> 30 -> null
+
+list.reverse();
+list.print(); // 30 -> 15 -> 5 -> null
+
+console.log("Cycle detected?", list.detectCycle()); // false
+
 list.clear();
-list.print(); // null
+console.log("Is empty after clear?", list.isEmpty()); // true
+
 
 // Time Complexity: O(n) for append, removeValue, search, and findMiddle operations. O(1) for prepend and insertAt (when inserting at the beginning). O(n) for insertAt (when inserting at the end or middle). O(1) for removeAt (when removing the head). O(n) for removeAt (when removing from the end or middle).
 // Space Complexity: O(n) for storing the nodes in the linked list, where n is the number of nodes in the list.
